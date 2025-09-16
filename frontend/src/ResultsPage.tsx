@@ -84,18 +84,31 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
                 if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
                   try {
                     const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
-                    await fetch(`${apiUrl}/api/v1/reset`, { method: 'POST' })
-                    // Force refresh data immediately
-                    const [countsResponse, resultsResponse] = await Promise.all([
-                      axios.get(`${apiUrl}/api/v1/counts`),
-                      axios.get(`${apiUrl}/api/v1/results`)
-                    ])
-                    setCounts(countsResponse.data)
-                    setResults(resultsResponse.data)
-                    setLastUpdate(new Date())
-                    alert('All votes have been reset!')
+                    const response = await fetch(`${apiUrl}/api/v1/reset`, { method: 'POST' })
+                    const data = await response.json()
+                    
+                    if (data.success) {
+                      // Reset local state immediately
+                      setCounts({
+                        King: 0,
+                        Queen: 0,
+                        Prince: 0,
+                        Princess: 0,
+                        'Best Costume Male': 0,
+                        'Best Costume Female': 0,
+                        'Best Performance Award': 0,
+                        total: 0
+                      })
+                      setResults({})
+                      setLastUpdate(new Date())
+                      alert('All votes have been reset!')
+                      // Refresh page to ensure clean state
+                      window.location.reload()
+                    } else {
+                      alert('Error: ' + data.message)
+                    }
                   } catch (error) {
-                    alert('Error resetting votes')
+                    alert('Error resetting votes: ' + error.message)
                   }
                 }
               }}
