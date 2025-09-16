@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results
+from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results, reset_all_votes
 import uuid
 
 app = FastAPI()
@@ -43,3 +43,17 @@ def vote(vote_data: dict):
         return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name}
     else:
         return {"success": False, "message": "Invalid category"}
+
+@app.post("/api/v1/reset")
+def reset_votes():
+    try:
+        reset_all_votes()
+        # Return current counts to verify reset worked
+        current_counts = get_counts()
+        return {
+            "success": True, 
+            "message": "All votes have been reset",
+            "counts": current_counts
+        }
+    except Exception as e:
+        return {"success": False, "message": f"Error: {str(e)}"}

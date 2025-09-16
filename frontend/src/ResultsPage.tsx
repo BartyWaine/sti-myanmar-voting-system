@@ -72,12 +72,38 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
             <div className={`w-3 h-3 rounded-full ${isUpdating ? 'bg-green-400 animate-pulse' : 'bg-green-500'}`}></div>
             <span className="text-sm text-purple-200">Live • Last updated: {lastUpdate.toLocaleTimeString()}</span>
           </div>
-          <button
-            onClick={onSwitchToVoting}
-            className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg"
-          >
-            🗳️ Back to Voting
-          </button>
+          <div className="space-x-4">
+            <button
+              onClick={onSwitchToVoting}
+              className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg"
+            >
+              🗳️ Back to Voting
+            </button>
+            <button
+              onClick={async () => {
+                if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
+                  try {
+                    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+                    await fetch(`${apiUrl}/api/v1/reset`, { method: 'POST' })
+                    // Force refresh data immediately
+                    const [countsResponse, resultsResponse] = await Promise.all([
+                      axios.get(`${apiUrl}/api/v1/counts`),
+                      axios.get(`${apiUrl}/api/v1/results`)
+                    ])
+                    setCounts(countsResponse.data)
+                    setResults(resultsResponse.data)
+                    setLastUpdate(new Date())
+                    alert('All votes have been reset!')
+                  } catch (error) {
+                    alert('Error resetting votes')
+                  }
+                }
+              }}
+              className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg"
+            >
+              🔄 Reset All Votes
+            </button>
+          </div>
         </div>
 
         {/* Results Grid - All 7 categories in one row */}

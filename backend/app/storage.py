@@ -62,6 +62,17 @@ def has_voted(device_token: str):
 def has_voted_for_category(device_token: str, category: str):
     return device_token in votes and category in votes[device_token]
 
+def reset_all_votes():
+    global vote_counts, candidate_votes, votes
+    # Reset vote counts
+    for category in vote_counts:
+        vote_counts[category] = 0
+    # Clear candidate votes
+    for category in candidate_votes:
+        candidate_votes[category] = {}
+    # Clear device votes
+    votes = {}
+
 def get_results():
     results = {}
     for category in vote_counts:
