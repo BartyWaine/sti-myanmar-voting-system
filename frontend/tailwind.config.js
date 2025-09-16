@@ -1,4 +1,5 @@
 module.exports = {
+  content: ["./index.html","./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -7,5 +8,6 @@ module.exports = {
         'wednesday-100': '#e6eef6',
       }
     }
-  }
+  },
+  plugins: [],
 }

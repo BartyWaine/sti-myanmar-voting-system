@@ -1,56 +1,45 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results
 import uuid
-import boto3
-from datetime import datetime
 
 app = FastAPI()
 
-# For local dev, comment boto3 lines or use mock DB
-try:
-    db = boto3.resource("dynamodb")
-    VOTES_TABLE = db.Table("Votes")
-    COUNTS_TABLE = db.Table("VoteCounts")
-except Exception:
-    VOTES_TABLE = None
-    COUNTS_TABLE = None
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins temporarily
+    allow_credentials=False,  # Set to False when using allow_origins=["*"]
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-CATEGORIES = ["King","Queen","Prince","Princess","Best Costume Male","Best Costume Female","Best Performance Award"]
-
-class RegisterRequest(BaseModel):
-    display_name: str | None = None
-
-class VoteRequest(BaseModel):
-    device_token: str
-    category: str
+@app.get("/")
+def read_root():
+    return {"message": "Voting Dashboard API"}
 
 @app.post("/api/v1/register-device")
-def register_device(req: RegisterRequest):
-    token = str(uuid.uuid4())
-    return {"device_token": token}
-
-@app.post("/api/v1/vote")
-def vote(req: VoteRequest):
-    if req.category not in CATEGORIES:
-        raise HTTPException(status_code=400, detail="invalid category")
-    if VOTES_TABLE is None:
-        return {"status":"ok","note":"No DB configured"}
-    try:
-        VOTES_TABLE.put_item(
-            Item={"vote_category": req.category,"device_token": req.device_token,"timestamp": datetime.utcnow().isoformat()},
-            ConditionExpression="attribute_not_exists(device_token)")
-    except Exception:
-        raise HTTPException(status_code=409, detail="already_voted")
-    COUNTS_TABLE.update_item(Key={"category": req.category},
-        UpdateExpression="ADD #c :inc",
-        ExpressionAttributeNames={"#c":"count"},
-        ExpressionAttributeValues={":inc":1})
-    return {"status": "ok"}
+def register_device(device: dict):
+    device_id = str(uuid.uuid4())
+    return {"device_id": device_id, "display_name": device.get("display_name")}
 
 @app.get("/api/v1/counts")
-def counts():
-    if COUNTS_TABLE is None:
-        return {c:0 for c in CATEGORIES}
-    resp = COUNTS_TABLE.scan()
-    items = {it['category']: int(it.get('count',0)) for it in resp.get('Items', [])}
-    return {c: items.get(c,0) for c in CATEGORIES}
+def get_vote_counts():
+    return get_counts()
+
+@app.get("/api/v1/results")
+def get_live_results():
+    return get_results()
+
+@app.post("/api/v1/vote")
+def vote(vote_data: dict):
+    device_token = vote_data.get("device_token")
+    category = vote_data.get("category")
+    candidate_name = vote_data.get("candidate_name")
+    
+    if has_voted_for_category(device_token, category):
+        return {"success": False, "message": "Already voted for this category"}
+    
+    if cast_vote(device_token, category, candidate_name):
+        return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name}
+    else:
+        return {"success": False, "message": "Invalid category"}
