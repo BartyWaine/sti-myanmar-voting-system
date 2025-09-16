@@ -84,31 +84,34 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
                 if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
                   try {
                     const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
-                    const response = await fetch(`${apiUrl}/api/v1/reset`, { method: 'POST' })
+                    console.log('Calling reset API:', `${apiUrl}/api/v1/reset`)
+                    
+                    const response = await fetch(`${apiUrl}/api/v1/reset`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      }
+                    })
+                    
+                    console.log('Reset response status:', response.status)
+                    
+                    if (!response.ok) {
+                      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+                    }
+                    
                     const data = await response.json()
+                    console.log('Reset response data:', data)
                     
                     if (data.success) {
-                      // Reset local state immediately
-                      setCounts({
-                        King: 0,
-                        Queen: 0,
-                        Prince: 0,
-                        Princess: 0,
-                        'Best Costume Male': 0,
-                        'Best Costume Female': 0,
-                        'Best Performance Award': 0,
-                        total: 0
-                      })
-                      setResults({})
-                      setLastUpdate(new Date())
                       alert('All votes have been reset!')
-                      // Refresh page to ensure clean state
+                      // Force page reload to get fresh data
                       window.location.reload()
                     } else {
-                      alert('Error: ' + data.message)
+                      alert('Reset failed: ' + (data.message || 'Unknown error'))
                     }
-                  } catch (error) {
-                    alert('Error resetting votes: ' + error.message)
+                  } catch (error: any) {
+                    console.error('Reset error:', error)
+                    alert('Error resetting votes. Check console for details.')
                   }
                 }
               }}
