@@ -95,8 +95,10 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
                   const adminEmail = prompt('Enter admin email:')
                   if (adminEmail === 'dr.waing1984@gmail.com') {
                     setIsAdmin(true)
+                    alert('Admin access granted!')
                   } else if (adminEmail) {
-                    alert('Access denied.')
+                    alert('Access denied. Invalid admin email.')
+                    setIsAdmin(false)
                   }
                 }}
                 className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
@@ -109,45 +111,58 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
               </button>
             )}
             {isAdmin && (
-              <button
-                onClick={async () => {
-                  if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
-                    try {
-                      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
-                      
-                      const response = await fetch(`${apiUrl}/api/v1/reset`, {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json'
+              <>
+                <button
+                  onClick={async () => {
+                    if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
+                      try {
+                        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+                        
+                        const response = await fetch(`${apiUrl}/api/v1/reset`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json'
+                          }
+                        })
+                        
+                        if (!response.ok) {
+                          throw new Error(`HTTP ${response.status}: ${response.statusText}`)
                         }
-                      })
-                      
-                      if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+                        
+                        const data = await response.json()
+                        
+                        if (data.success) {
+                          alert('All votes have been reset!')
+                          setIsAdmin(false) // Logout after reset
+                          window.location.reload()
+                        } else {
+                          alert('Reset failed: ' + (data.message || 'Unknown error'))
+                        }
+                      } catch (error: any) {
+                        console.error('Reset error:', error)
+                        alert('Error resetting votes. Check console for details.')
                       }
-                      
-                      const data = await response.json()
-                      
-                      if (data.success) {
-                        alert('All votes have been reset!')
-                        window.location.reload()
-                      } else {
-                        alert('Reset failed: ' + (data.message || 'Unknown error'))
-                      }
-                    } catch (error: any) {
-                      console.error('Reset error:', error)
-                      alert('Error resetting votes. Check console for details.')
                     }
-                  }
-                }}
-                className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
-                style={{
-                  background: 'linear-gradient(45deg, #FF6347, #DC143C)',
-                  border: '2px solid #FFD700'
-                }}
-              >
-                🔄 Reset All Votes
-              </button>
+                  }}
+                  className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+                  style={{
+                    background: 'linear-gradient(45deg, #FF6347, #DC143C)',
+                    border: '2px solid #FFD700'
+                  }}
+                >
+                  🔄 Reset All Votes
+                </button>
+                <button
+                  onClick={() => setIsAdmin(false)}
+                  className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+                  style={{
+                    background: 'linear-gradient(45deg, #666, #333)',
+                    border: '2px solid #FFD700'
+                  }}
+                >
+                  🚪 Logout
+                </button>
+              </>
             )}
           </div>
         </div>
