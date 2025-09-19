@@ -90,10 +90,15 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
             </button>
             <button
               onClick={async () => {
+                const adminEmail = prompt('Enter admin email to reset votes:')
+                if (adminEmail !== 'dr.waing1984@gmail.com') {
+                  alert('Access denied. Only admin can reset votes.')
+                  return
+                }
+                
                 if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
                   try {
                     const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
-                    console.log('Calling reset API:', `${apiUrl}/api/v1/reset`)
                     
                     const response = await fetch(`${apiUrl}/api/v1/reset`, {
                       method: 'POST',
@@ -102,18 +107,14 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
                       }
                     })
                     
-                    console.log('Reset response status:', response.status)
-                    
                     if (!response.ok) {
                       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
                     }
                     
                     const data = await response.json()
-                    console.log('Reset response data:', data)
                     
                     if (data.success) {
                       alert('All votes have been reset!')
-                      // Force page reload to get fresh data
                       window.location.reload()
                     } else {
                       alert('Reset failed: ' + (data.message || 'Unknown error'))
@@ -130,7 +131,7 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
                 border: '2px solid #FFD700'
               }}
             >
-              🔄 Reset All Votes
+              🔒 Admin Reset
             </button>
           </div>
         </div>
