@@ -73,6 +73,7 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
           <h2 className="text-3xl font-bold mb-4" style={{ color: '#6441A5' }}>
             🎭 Magical Results Dashboard 🎭
           </h2>
+          <div className="text-red-500 font-bold text-lg mb-2">✅ LATEST VERSION DEPLOYED</div>
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className={`w-3 h-3 rounded-full ${isUpdating ? 'bg-green-400 animate-pulse' : 'bg-green-500'}`}></div>
             <span className="text-sm" style={{ color: '#FFD700' }}>Live • Last updated: {lastUpdate.toLocaleTimeString()}</span>
