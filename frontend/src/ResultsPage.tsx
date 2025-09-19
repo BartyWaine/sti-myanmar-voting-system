@@ -31,6 +31,7 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
   const [results, setResults] = useState<any>({})
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,51 +89,66 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
             >
               🏰 Back to Voting
             </button>
-            <button
-              onClick={async () => {
-                const adminEmail = prompt('Enter admin email to reset votes:')
-                if (adminEmail !== 'dr.waing1984@gmail.com') {
-                  alert('Access denied. Only admin can reset votes.')
-                  return
-                }
-                
-                if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
-                  try {
-                    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
-                    
-                    const response = await fetch(`${apiUrl}/api/v1/reset`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      }
-                    })
-                    
-                    if (!response.ok) {
-                      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-                    }
-                    
-                    const data = await response.json()
-                    
-                    if (data.success) {
-                      alert('All votes have been reset!')
-                      window.location.reload()
-                    } else {
-                      alert('Reset failed: ' + (data.message || 'Unknown error'))
-                    }
-                  } catch (error: any) {
-                    console.error('Reset error:', error)
-                    alert('Error resetting votes. Check console for details.')
+            {!isAdmin && (
+              <button
+                onClick={() => {
+                  const adminEmail = prompt('Enter admin email:')
+                  if (adminEmail === 'dr.waing1984@gmail.com') {
+                    setIsAdmin(true)
+                  } else if (adminEmail) {
+                    alert('Access denied.')
                   }
-                }
-              }}
-              className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
-              style={{
-                background: 'linear-gradient(45deg, #FF6347, #DC143C)',
-                border: '2px solid #FFD700'
-              }}
-            >
-              🔒 Admin Reset
-            </button>
+                }}
+                className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+                style={{
+                  background: 'linear-gradient(45deg, #6441A5, #2a0845)',
+                  border: '2px solid #FFD700'
+                }}
+              >
+                🔐 Admin Login
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={async () => {
+                  if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
+                    try {
+                      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+                      
+                      const response = await fetch(`${apiUrl}/api/v1/reset`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        }
+                      })
+                      
+                      if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+                      }
+                      
+                      const data = await response.json()
+                      
+                      if (data.success) {
+                        alert('All votes have been reset!')
+                        window.location.reload()
+                      } else {
+                        alert('Reset failed: ' + (data.message || 'Unknown error'))
+                      }
+                    } catch (error: any) {
+                      console.error('Reset error:', error)
+                      alert('Error resetting votes. Check console for details.')
+                    }
+                  }
+                }}
+                className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+                style={{
+                  background: 'linear-gradient(45deg, #FF6347, #DC143C)',
+                  border: '2px solid #FFD700'
+                }}
+              >
+                🔄 Reset All Votes
+              </button>
+            )}
           </div>
         </div>
 
