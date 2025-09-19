@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results, reset_all_votes
+from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results, reset_all_votes, update_user_activity, get_concurrent_users
 import uuid
 
 app = FastAPI()
@@ -20,7 +20,15 @@ def read_root():
 @app.post("/api/v1/register-device")
 def register_device(device: dict):
     device_id = str(uuid.uuid4())
+    update_user_activity(device_id)
     return {"device_id": device_id, "display_name": device.get("display_name")}
+
+@app.get("/api/v1/users")
+def get_user_stats():
+    return {
+        "concurrent_users": get_concurrent_users(),
+        "total_votes": get_counts().get('total', 0)
+    }
 
 @app.get("/api/v1/counts")
 def get_vote_counts():
@@ -35,6 +43,9 @@ def vote(vote_data: dict):
     device_token = vote_data.get("device_token")
     category = vote_data.get("category")
     candidate_name = vote_data.get("candidate_name")
+    
+    # Track user activity
+    update_user_activity(device_token)
     
     if has_voted_for_category(device_token, category):
         return {"success": False, "message": "Already voted for this category"}

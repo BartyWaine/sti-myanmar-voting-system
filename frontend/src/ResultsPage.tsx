@@ -58,26 +58,35 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
   }, [])
 
   return (
-    <div className="min-h-screen p-4" style={{ backgroundColor: '#000000', background: 'linear-gradient(135deg, #000000 0%, #1a0033 50%, #000000 100%)', color: '#e9d5ff' }}>
+    <div className="min-h-screen p-4" style={{ backgroundColor: '#2a0845', background: 'linear-gradient(135deg, #2a0845 0%, #6441A5 50%, #2a0845 100%)', color: '#ffffff' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold mb-2 text-yellow-300">
-            🎓 STI Myanmar Fresher Welcome 🎓
+          <div className="mb-4">
+            <div className="text-6xl text-center animate-bounce">🏰✨🎆</div>
+            <div className="text-2xl text-center mt-2">🧚♀️🤴👸👑🎭🎉</div>
+          </div>
+          <h1 className="text-4xl font-bold mb-2" style={{ color: '#FFD700' }}>
+            ✨ STI Myanmar Fresher Welcome ✨
           </h1>
-          <h2 className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-purple-500">
-            📊 Live Results Dashboard
+          <h2 className="text-3xl font-bold mb-4" style={{ color: '#6441A5' }}>
+            🎭 Magical Results Dashboard 🎭
           </h2>
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className={`w-3 h-3 rounded-full ${isUpdating ? 'bg-green-400 animate-pulse' : 'bg-green-500'}`}></div>
-            <span className="text-sm text-purple-200">Live • Last updated: {lastUpdate.toLocaleTimeString()}</span>
+            <span className="text-sm" style={{ color: '#FFD700' }}>Live • Last updated: {lastUpdate.toLocaleTimeString()}</span>
           </div>
           <div className="space-x-4">
             <button
               onClick={onSwitchToVoting}
-              className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg"
+              className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+              style={{
+                background: 'linear-gradient(45deg, #6441A5, #2a0845)',
+                border: '2px solid #FFD700',
+                boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)'
+              }}
             >
-              🗳️ Back to Voting
+              🏰 Back to Voting
             </button>
             <button
               onClick={async () => {
@@ -115,85 +124,120 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
                   }
                 }
               }}
-              className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg"
+              className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+              style={{
+                background: 'linear-gradient(45deg, #FF6347, #DC143C)',
+                border: '2px solid #FFD700'
+              }}
             >
               🔄 Reset All Votes
             </button>
           </div>
         </div>
 
-        {/* Results Grid - All 7 categories in one row */}
-        <div className="grid grid-cols-7 gap-3 mb-6">
+        {/* Results Grid - Responsive layout to prevent overlap */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 mb-6 items-start">
           {Object.entries(counts).filter(([key]) => key !== 'total').map(([key, count]) => (
             <div 
               key={key}
-              className="p-3 rounded-lg shadow-xl"
+              className="p-3 rounded-lg shadow-xl h-full flex flex-col"
               style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                border: '2px solid rgba(147, 51, 234, 0.6)',
-                boxShadow: '0 10px 25px rgba(147, 51, 234, 0.3)',
-                backdropFilter: 'blur(10px)'
+                backgroundColor: 'rgba(100, 65, 165, 0.2)',
+                border: '2px solid #6441A5',
+                boxShadow: '0 10px 25px rgba(100, 65, 165, 0.3)',
+                backdropFilter: 'blur(10px)',
+                minHeight: '280px'
               }}
             >
-              <h3 className="text-sm font-bold text-center text-purple-100 mb-2">{key}</h3>
+              <div className="text-center mb-2" style={{ height: '80px' }}>
+                <div className="w-12 h-12 mx-auto mb-1 rounded-full flex items-center justify-center animate-pulse" style={{ background: 'linear-gradient(45deg, #FFD700, #FF69B4, #00CED1)', border: '2px solid #FFD700' }}>
+                  <span className="text-xl">
+                    {key === 'King' ? '👑' : 
+                     key === 'Queen' ? '👸' :
+                     key === 'Prince' ? '🤴' :
+                     key === 'Princess' ? '👰' :
+                     key === 'Best Costume Male' ? '🤵' :
+                     key === 'Best Costume Female' ? '💃' : '🎭'}
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold leading-tight" style={{ color: '#FFD700', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{key}</h3>
+                <div className="text-xs" style={{ color: '#FFD700', height: '15px' }}>
+                  {key === 'King' ? '✨🏰✨' : 
+                   key === 'Queen' ? '🌹💎🌹' :
+                   key === 'Prince' ? '⚔️🏰⚔️' :
+                   key === 'Princess' ? '🌸✨🌸' :
+                   key === 'Best Costume Male' ? '🎭🎆🎭' :
+                   key === 'Best Costume Female' ? '🎀✨🎀' : '🎆🎭🎆'}
+                </div>
+              </div>
               
               {/* Vote Count */}
-              <div className="text-center mb-2">
-                <p className={`text-2xl font-bold text-white drop-shadow-lg transition-all duration-500 ${isUpdating ? 'scale-110 text-green-400' : ''}`}>{count}</p>
-                <p className="text-xs text-purple-200 font-semibold">
+              <div className="text-center mb-4" style={{ height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <p className={`text-xl font-bold drop-shadow-lg transition-all duration-500 ${isUpdating ? 'scale-110' : ''}`} style={{ color: isUpdating ? '#32CD32' : '#FFD700' }}>{count}</p>
+              </div>
+              
+              {/* Percentage */}
+              <div className="text-center mb-4" style={{ height: '25px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <p className="text-xs font-semibold" style={{ color: '#ffffff' }}>
                   {counts.total > 0 ? Math.round((count / counts.total) * 100) : 0}%
                 </p>
               </div>
 
               {/* Progress Bar */}
-              <div className="h-2 bg-black/70 rounded-full overflow-hidden border border-purple-400/30 mb-2">
-                <div 
-                  className={`h-full transition-all duration-700 ease-out ${isUpdating ? 'animate-pulse' : ''}`}
-                  style={{
-                    width: `${counts.total > 0 ? (count / counts.total) * 100 : 0}%`,
-                    background: 'linear-gradient(90deg, #7c3aed 0%, #a855f7 50%, #c084fc 100%)'
-                  }}
-                ></div>
+              <div className="mb-2" style={{ height: '20px' }}>
+                <div className="h-2 rounded-full overflow-hidden border" style={{ backgroundColor: '#2a0845', borderColor: '#6441A5' }}>
+                  <div 
+                    className={`h-full transition-all duration-700 ease-out ${isUpdating ? 'animate-pulse' : ''}`}
+                    style={{
+                      width: `${counts.total > 0 ? (count / counts.total) * 100 : 0}%`,
+                      background: 'linear-gradient(90deg, #6441A5 0%, #FFD700 50%, #6441A5 100%)'
+                    }}
+                  ></div>
+                </div>
               </div>
 
               {/* Leading Candidate */}
-              {results[key] && (
-                <div className="p-2 bg-black/50 rounded border border-purple-400/30">
-                  <p className="text-xs text-purple-300 mb-1">🏆 Leading:</p>
-                  <p className="text-xs font-bold text-yellow-400 leading-tight">
-                    {results[key].leading_candidate}
-                  </p>
-                  <p className="text-xs text-purple-200">
-                    {results[key].votes} votes
-                  </p>
-                </div>
-              )}
+              <div className="mt-auto" style={{ height: '80px' }}>
+                {results[key] && (
+                  <div className="p-2 rounded border h-full flex flex-col justify-center" style={{ backgroundColor: 'rgba(42, 8, 69, 0.8)', borderColor: '#6441A5' }}>
+                    <p className="text-xs mb-1" style={{ color: '#FFD700' }}>🏆 Leading:</p>
+                    <p className="text-xs font-bold leading-tight" style={{ color: '#ffffff' }}>
+                      {results[key].leading_candidate}
+                    </p>
+                    <p className="text-xs" style={{ color: '#FFD700' }}>
+                      {results[key].votes} votes
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
         
-        {/* Total Votes */}
-        <div className="text-center">
+        {/* Total Votes - Enhanced Display */}
+        <div className="text-center mb-6">
           <div 
-            className="p-6 rounded-xl inline-block"
+            className="p-8 rounded-xl inline-block transform hover:scale-105 transition-transform duration-300"
             style={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(88,28,135,0.3) 100%)',
-              border: '1px solid rgba(147, 51, 234, 0.5)',
-              boxShadow: '0 25px 50px rgba(147, 51, 234, 0.3)'
+              background: 'linear-gradient(135deg, rgba(100, 65, 165, 0.4) 0%, rgba(42, 8, 69, 0.9) 100%)',
+              border: '4px solid #FFD700',
+              boxShadow: '0 30px 60px rgba(255, 215, 0, 0.6)',
+              backdropFilter: 'blur(15px)'
             }}
           >
-            <h2 className="text-3xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-purple-400">
-              🕸️ Total Votes
+            <div className="text-4xl mb-2">🏆✨🎭✨🏆</div>
+            <h2 className="text-4xl font-bold mb-4" style={{ color: '#FFD700' }}>
+              🎭 TOTAL VOTES 🎭
             </h2>
-            <p className={`text-5xl font-bold text-purple-100 mb-2 drop-shadow-lg transition-all duration-500 ${isUpdating ? 'scale-110 text-green-300' : ''}`}>{counts.total}</p>
-            <p className="text-purple-200/80 italic">souls have spoken</p>
+            <p className={`text-6xl font-bold mb-3 drop-shadow-2xl transition-all duration-500 ${isUpdating ? 'scale-110 animate-pulse' : ''}`} style={{ color: isUpdating ? '#32CD32' : '#FFD700', textShadow: '0 0 20px rgba(255, 215, 0, 0.8)' }}>{counts.total}</p>
+            <p className="text-lg italic font-semibold" style={{ color: '#ffffff' }}>✨ magical votes cast! ✨</p>
           </div>
         </div>
 
-        <div className="mt-6 text-center text-purple-300/60 text-sm">
-          <p className="flex items-center justify-center gap-2">
-            <span className={`inline-block w-2 h-2 rounded-full ${isUpdating ? 'bg-green-400 animate-ping' : 'bg-purple-400'}`}></span>
-            🕷️ Auto-refreshing every 2 seconds • "How delightfully morbid"
+        <div className="mt-6 text-center text-sm">
+          <p className="flex items-center justify-center gap-2" style={{ color: '#FFD700' }}>
+            <span className={`inline-block w-2 h-2 rounded-full ${isUpdating ? 'bg-green-400 animate-ping' : 'bg-yellow-400'}`}></span>
+            ✨ Auto-refreshing every 2 seconds • "Bibbidi-Bobbidi-Boo!" 🪄
           </p>
         </div>
       </div>

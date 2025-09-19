@@ -21,6 +21,8 @@ candidate_votes = {
 }
 
 votes = {}  # device_token -> set of categories
+active_users = set()  # Track active users
+last_seen = {}  # device_token -> timestamp
 
 def get_counts():
     total = sum(vote_counts.values())
@@ -72,6 +74,30 @@ def reset_all_votes():
         candidate_votes[category] = {}
     # Clear device votes
     votes = {}
+
+def update_user_activity(device_token: str):
+    import time
+    active_users.add(device_token)
+    last_seen[device_token] = time.time()
+    
+    # Clean up inactive users (older than 30 seconds)
+    current_time = time.time()
+    inactive_users = [token for token, last_time in last_seen.items() 
+                     if current_time - last_time > 30]
+    for token in inactive_users:
+        active_users.discard(token)
+        del last_seen[token]
+
+def get_concurrent_users():
+    import time
+    current_time = time.time()
+    # Clean up first
+    inactive_users = [token for token, last_time in last_seen.items() 
+                     if current_time - last_time > 30]
+    for token in inactive_users:
+        active_users.discard(token)
+        del last_seen[token]
+    return len(active_users)
 
 def get_results():
     results = {}

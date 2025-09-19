@@ -58,20 +58,29 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
   }
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: '#000000', background: 'linear-gradient(135deg, #000000 0%, #1a0033 50%, #000000 100%)', color: '#e9d5ff' }}>
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#2a0845', background: 'linear-gradient(135deg, #2a0845 0%, #6441A5 50%, #2a0845 100%)', color: '#ffffff' }}>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-yellow-300">
-            🎓 STI Myanmar Fresher Welcome 🎓
+          <div className="mb-4">
+            <div className="text-6xl text-center animate-bounce">🏰✨🎆</div>
+            <div className="text-2xl text-center mt-2">🧚‍♀️🤴👸👑🎭🎉</div>
+          </div>
+          <h1 className="text-4xl font-bold mb-2" style={{ color: '#FFD700' }}>
+            ✨ STI Myanmar Fresher Welcome ✨
           </h1>
-          <h2 className="text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-purple-500">
-            🗳️ Cast Your Votes
+          <h2 className="text-3xl font-bold mb-4" style={{ color: '#6441A5' }}>
+            🏰 Cast Your Magical Votes 🏰
           </h2>
           <button
             onClick={onSwitchToResults}
-            className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg"
+            className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+            style={{
+              background: 'linear-gradient(45deg, #6441A5, #2a0845)',
+              border: '2px solid #FFD700',
+              boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)'
+            }}
           >
-            📊 View Results Dashboard
+            🎭 View Magical Results
           </button>
         </div>
 
@@ -81,13 +90,33 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
               key={category}
               className="p-6 rounded-xl shadow-2xl transition-all duration-300 hover:transform hover:scale-105"
               style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                border: '2px solid rgba(147, 51, 234, 0.6)',
-                boxShadow: '0 15px 35px rgba(147, 51, 234, 0.3)',
+                backgroundColor: 'rgba(100, 65, 165, 0.2)',
+                border: '2px solid #6441A5',
+                boxShadow: '0 15px 35px rgba(100, 65, 165, 0.3)',
                 backdropFilter: 'blur(10px)'
               }}
             >
-              <h3 className="text-xl font-semibold mb-4 text-center text-purple-100">{category}</h3>
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 mx-auto mb-2 rounded-full flex items-center justify-center animate-pulse" style={{ background: 'linear-gradient(45deg, #FFD700, #FF69B4, #00CED1)', border: '3px solid #FFD700' }}>
+                  <span className="text-3xl">
+                    {category === 'King' ? '👑' : 
+                     category === 'Queen' ? '👸' :
+                     category === 'Prince' ? '🤴' :
+                     category === 'Princess' ? '👰' :
+                     category === 'Best Costume Male' ? '🤵' :
+                     category === 'Best Costume Female' ? '💃' : '🎭'}
+                  </span>
+                </div>
+                <div className="text-sm text-center" style={{ color: '#FFD700' }}>
+                  {category === 'King' ? '🦁✨🏰' : 
+                   category === 'Queen' ? '🐱🌹💎' :
+                   category === 'Prince' ? '🐶⚔️🏰' :
+                   category === 'Princess' ? '🐭🌸✨' :
+                   category === 'Best Costume Male' ? '🐻🎭🎆' :
+                   category === 'Best Costume Female' ? '🥰🎀✨' : '🐸🎆🎭'}
+                </div>
+                <h3 className="text-xl font-semibold" style={{ color: '#FFD700' }}>{category}</h3>
+              </div>
               
               <div className="space-y-4">
                 <input
@@ -97,21 +126,21 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                   onChange={(e) => handleVotingNameChange(category, e.target.value)}
                   className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200"
                   style={{
-                    backgroundColor: '#2d1b69',
-                    border: '2px solid rgba(147, 51, 234, 0.5)',
+                    backgroundColor: 'rgba(42, 8, 69, 0.8)',
+                    border: '2px solid #6441A5',
                     fontSize: '16px',
                     color: '#ffffff',
-                    caretColor: '#ffffff'
+                    caretColor: '#FFD700'
                   }}
                   onFocus={(e) => {
-                    e.target.style.borderColor = '#9333ea'
-                    e.target.style.boxShadow = '0 0 20px rgba(147, 51, 234, 0.5)'
-                    e.target.style.backgroundColor = '#3730a3'
+                    e.target.style.borderColor = '#FFD700'
+                    e.target.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.6)'
+                    e.target.style.backgroundColor = 'rgba(100, 65, 165, 0.9)'
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(147, 51, 234, 0.5)'
+                    e.target.style.borderColor = '#6441A5'
                     e.target.style.boxShadow = 'none'
-                    e.target.style.backgroundColor = '#2d1b69'
+                    e.target.style.backgroundColor = 'rgba(42, 8, 69, 0.8)'
                   }}
                 />
                 
@@ -119,18 +148,20 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                   onClick={() => handleVote(category)}
                   className="w-full px-4 py-3 rounded-lg font-bold text-white transition-all duration-200 transform hover:scale-105 hover:shadow-lg active:scale-95"
                   style={{
-                    background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
-                    border: '1px solid rgba(147, 51, 234, 0.8)',
-                    boxShadow: '0 4px 15px rgba(147, 51, 234, 0.3)'
+                    background: 'linear-gradient(135deg, #6441A5 0%, #2a0845 50%, #FFD700 100%)',
+                    border: '2px solid #FFD700',
+                    boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(147, 51, 234, 0.5)'
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 215, 0, 0.8)'
+                    e.currentTarget.style.transform = 'scale(1.05)'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(147, 51, 234, 0.3)'
+                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(100, 65, 165, 0.4)'
+                    e.currentTarget.style.transform = 'scale(1)'
                   }}
                 >
-                  🗳️ VOTE
+                  🏰 VOTE
                 </button>
               </div>
             </div>
