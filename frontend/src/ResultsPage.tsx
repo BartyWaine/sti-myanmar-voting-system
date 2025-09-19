@@ -89,27 +89,25 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
             >
               🏰 Back to Voting
             </button>
-            {!isAdmin && (
-              <button
-                onClick={() => {
-                  const adminEmail = prompt('Enter admin email:')
-                  if (adminEmail === 'dr.waing1984@gmail.com') {
-                    setIsAdmin(true)
-                    alert('Admin access granted!')
-                  } else if (adminEmail) {
-                    alert('Access denied. Invalid admin email.')
-                    setIsAdmin(false)
-                  }
-                }}
-                className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
-                style={{
-                  background: 'linear-gradient(45deg, #6441A5, #2a0845)',
-                  border: '2px solid #FFD700'
-                }}
-              >
-                🔐 Admin Login
-              </button>
-            )}
+            <button
+              onClick={() => {
+                const adminEmail = prompt('Enter admin email:')
+                if (adminEmail === 'dr.waing1984@gmail.com') {
+                  setIsAdmin(true)
+                  alert('Admin access granted!')
+                } else if (adminEmail) {
+                  alert('Access denied. Invalid admin email.')
+                  setIsAdmin(false)
+                }
+              }}
+              className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+              style={{
+                background: 'linear-gradient(45deg, #6441A5, #2a0845)',
+                border: '2px solid #FFD700'
+              }}
+            >
+              🔐 Admin Login
+            </button>
             {isAdmin && (
               <>
                 <button
