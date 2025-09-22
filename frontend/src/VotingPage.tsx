@@ -35,7 +35,7 @@ function VotingPage({ onSwitchToResults, user, authToken, onLogout }: VotingPage
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://sti-voting-api.onrender.com'}/api/v1/vote`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://sti-myanmar-voting-system.onrender.com'}/api/v1/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
