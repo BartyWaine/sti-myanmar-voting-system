@@ -80,7 +80,7 @@ function OAuthLoginPage({ onLogin }: OAuthLoginPageProps) {
       <div className="max-w-lg w-full">
         <div className="text-center mb-10">
           <div className="mb-6">
-            <div className="text-8xl text-center animate-pulse">👑</div>
+            <div className="text-4xl text-center animate-pulse">👑</div>
             <div className="text-4xl text-center mt-3 animate-bounce">✨🎭✨</div>
           </div>
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
