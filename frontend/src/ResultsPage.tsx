@@ -70,7 +70,7 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
           <h1 className="text-4xl font-bold mb-2" style={{ color: '#FFD700' }}>
             ✨ STI Myanmar Fresher Welcome ✨
           </h1>
-          <h2 className="text-3xl font-bold mb-4" style={{ color: '#6441A5' }}>
+          <h2 className="text-3xl font-bold mb-4" style={{ color: '#ffffff' }}>
             🎭 Magical Results Dashboard 🎭
           </h2>
           <div className="text-red-500 font-bold text-lg mb-2">✅ LATEST VERSION DEPLOYED</div>
@@ -257,7 +257,7 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
             }}
           >
             <div className="text-4xl mb-2">🏆✨🎭✨🏆</div>
-            <h2 className="text-4xl font-bold mb-4" style={{ color: '#FFD700' }}>
+            <h2 className="text-4xl font-bold mb-4" style={{ color: '#ffffff' }}>
               🎭 TOTAL VOTES 🎭
             </h2>
             <p className={`text-6xl font-bold mb-3 drop-shadow-2xl transition-all duration-500 ${isUpdating ? 'scale-110 animate-pulse' : ''}`} style={{ color: isUpdating ? '#32CD32' : '#FFD700', textShadow: '0 0 20px rgba(255, 215, 0, 0.8)' }}>{counts.total}</p>

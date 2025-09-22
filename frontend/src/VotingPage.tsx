@@ -68,7 +68,7 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
           <h1 className="text-4xl font-bold mb-2" style={{ color: '#FFD700' }}>
             ✨ STI Myanmar Fresher Welcome ✨
           </h1>
-          <h2 className="text-3xl font-bold mb-4" style={{ color: '#6441A5' }}>
+          <h2 className="text-3xl font-bold mb-4" style={{ color: '#ffffff' }}>
             🏰 Cast Your Magical Votes 🏰
           </h2>
           <button
@@ -80,7 +80,7 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
               boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)'
             }}
           >
-            🎭 View Magical Results
+            <span style={{ color: '#ffffff' }}>🎭 View Magical Results</span>
           </button>
         </div>
 
@@ -124,7 +124,7 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                   placeholder="✨ Enter candidate name"
                   value={votingNames[category] || ''}
                   onChange={(e) => handleVotingNameChange(category, e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200"
+                  className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 placeholder-white"
                   style={{
                     backgroundColor: 'rgba(42, 8, 69, 0.8)',
                     border: '2px solid #6441A5',
@@ -132,7 +132,6 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                     color: '#ffffff',
                     caretColor: '#FFD700'
                   }}
-                  className="placeholder-white"
                   onFocus={(e) => {
                     e.target.style.borderColor = '#FFD700'
                     e.target.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.6)'
@@ -162,7 +161,7 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                     e.currentTarget.style.transform = 'scale(1)'
                   }}
                 >
-                  🏰 VOTE
+                  <span style={{ color: '#ffffff' }}>🏰 VOTE</span>
                 </button>
               </div>
             </div>
