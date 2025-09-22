@@ -23,6 +23,12 @@ app.add_middleware(
 def read_root():
     return {"message": "Voting Dashboard API"}
 
+@app.get("/api/v1/create-demo-account")
+def create_demo_account():
+    # Create a demo account for testing
+    result = create_user("demo@test.com", "123456", "Demo User")
+    return result
+
 @app.post("/api/v1/register-device")
 def register_device(device: dict):
     device_id = str(uuid.uuid4())
