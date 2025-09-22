@@ -146,12 +146,8 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                 
                 <button
                   onClick={() => handleVote(category)}
-                  className="w-full px-4 py-3 rounded-lg font-bold text-white transition-all duration-200 transform hover:scale-105 hover:shadow-lg active:scale-95"
-                  style={{
-                    background: 'linear-gradient(135deg, #6441A5 0%, #2a0845 50%, #FFD700 100%)',
-                    border: '2px solid #FFD700',
-                    boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)'
-                  }}
+                  className="w-full px-4 py-3 rounded-lg font-bold transition-all duration-200 transform hover:scale-105 hover:shadow-lg active:scale-95"
+
                   onMouseEnter={(e) => {
                     e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 215, 0, 0.8)'
                     e.currentTarget.style.transform = 'scale(1.05)'
@@ -160,8 +156,14 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                     e.currentTarget.style.boxShadow = '0 4px 15px rgba(100, 65, 165, 0.4)'
                     e.currentTarget.style.transform = 'scale(1)'
                   }}
+                  style={{
+                    background: 'linear-gradient(135deg, #6441A5 0%, #2a0845 50%, #FFD700 100%)',
+                    border: '2px solid #FFD700',
+                    boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)',
+                    color: '#ffffff'
+                  }}
                 >
-                  <span style={{ color: '#ffffff' }}>🏰 VOTE</span>
+                  🏰 VOTE
                 </button>
               </div>
             </div>
