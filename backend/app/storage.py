@@ -11,8 +11,11 @@ from app.database import (
     init_database
 )
 
-# Initialize database on startup
-init_database()
+# Initialize database on startup (safe)
+try:
+    init_database()
+except Exception as e:
+    print(f"Database initialization failed, using in-memory storage: {e}")
 
 # Fallback in-memory storage for local development
 vote_counts = {

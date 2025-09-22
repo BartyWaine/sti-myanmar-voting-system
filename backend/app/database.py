@@ -6,11 +6,12 @@ import json
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 def get_db_connection():
-    if DATABASE_URL:
-        return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
-    else:
-        # Fallback to in-memory for local development
-        return None
+    try:
+        if DATABASE_URL:
+            return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    except Exception as e:
+        print(f"Database connection failed: {e}")
+    return None
 
 def init_database():
     conn = get_db_connection()
