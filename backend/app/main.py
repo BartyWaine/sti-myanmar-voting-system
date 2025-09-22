@@ -49,6 +49,7 @@ def vote(vote_data: dict, request: Request):
     category = vote_data.get("category")
     candidate_name = vote_data.get("candidate_name")
     security_data = vote_data.get("security", {})
+    user_data = vote_data.get("user", {})
     
     # Get client IP address
     client_ip = request.client.host
@@ -66,12 +67,21 @@ def vote(vote_data: dict, request: Request):
     if abs(current_time - timestamp) > 300000:  # 5 minutes
         return {"success": False, "message": "Request expired"}
     
+    # Validate user authentication
+    user_id = user_data.get("id")
+    user_email = user_data.get("email")
+    user_provider = user_data.get("provider")
+    
+    if not user_id or not user_email or not user_provider:
+        return {"success": False, "message": "Authentication required"}
+    
     # Validate security data
     if not fingerprint or not session_key or len(session_key) != 64:
         return {"success": False, "message": "Invalid security data"}
     
-    # Create enhanced device token with security data
+    # Create enhanced device token with security and user data
     enhanced_token = f"{device_token}:{fingerprint}:{client_ip}"
+    social_user_token = f"{user_provider}:{user_id}"
     
     # Track user activity
     update_user_activity(enhanced_token)
@@ -83,14 +93,19 @@ def vote(vote_data: dict, request: Request):
     if has_ip_voted_for_category(client_ip, category):
         return {"success": False, "message": "This IP address has already voted for this category"}
     
+    # Check social account voting (primary prevention)
+    if has_voted_for_category(social_user_token, category):
+        return {"success": False, "message": "This social account has already voted for this category"}
+    
     # Check fingerprint-based voting
     if has_voted_for_category(fingerprint, category):
         return {"success": False, "message": "This device has already voted for this category"}
     
     if cast_vote(enhanced_token, category, candidate_name, client_ip):
-        # Also record fingerprint vote
+        # Also record social account and fingerprint votes
+        cast_vote(social_user_token, category, candidate_name, client_ip)
         cast_vote(fingerprint, category, candidate_name, client_ip)
-        return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name}
+        return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name, "user": user_email}
     else:
         return {"success": False, "message": "Invalid category"}
 

@@ -3,9 +3,11 @@ import { SecurityManager } from './security'
 
 interface VotingPageProps {
   onSwitchToResults: () => void
+  user: any
+  onLogout: () => void
 }
 
-function VotingPage({ onSwitchToResults }: VotingPageProps) {
+function VotingPage({ onSwitchToResults, user, onLogout }: VotingPageProps) {
   const [votingNames, setVotingNames] = useState<{[key: string]: string}>({})
   const [securityData, setSecurityData] = useState<any>(null)
   const security = SecurityManager.getInstance()
@@ -41,7 +43,12 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
           device_token: securityData?.deviceId,
           category: category,
           candidate_name: name,
-          security: security.getSecurityData()
+          security: security.getSecurityData(),
+          user: {
+            id: user?.id,
+            email: user?.email,
+            provider: user?.provider
+          }
         })
       })
       
@@ -72,17 +79,33 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
           <h2 className="text-3xl font-bold mb-4" style={{ color: '#ffffff' }}>
             🏰 Cast Your Magical Votes 🏰
           </h2>
-          <button
-            onClick={onSwitchToResults}
-            className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
-            style={{
-              background: 'linear-gradient(45deg, #6441A5, #2a0845)',
-              border: '2px solid #FFD700',
-              boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)'
-            }}
-          >
-            <span style={{ color: '#ffffff' }}>🎭 View Magical Results</span>
-          </button>
+          <div className="flex gap-4 justify-center items-center">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ backgroundColor: 'rgba(100, 65, 165, 0.3)', border: '1px solid #6441A5' }}>
+              {user?.picture && <img src={user.picture} alt="Profile" className="w-8 h-8 rounded-full" />}
+              <span style={{ color: '#FFD700' }}>👋 {user?.name}</span>
+            </div>
+            <button
+              onClick={onSwitchToResults}
+              className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+              style={{
+                background: 'linear-gradient(45deg, #6441A5, #2a0845)',
+                border: '2px solid #FFD700',
+                boxShadow: '0 4px 15px rgba(100, 65, 165, 0.4)'
+              }}
+            >
+              <span style={{ color: '#ffffff' }}>🎭 View Results</span>
+            </button>
+            <button
+              onClick={onLogout}
+              className="px-4 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+              style={{
+                background: 'linear-gradient(45deg, #666, #333)',
+                border: '2px solid #FFD700'
+              }}
+            >
+              🚪 Logout
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

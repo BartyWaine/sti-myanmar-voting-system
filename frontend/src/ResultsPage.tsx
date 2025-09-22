@@ -14,9 +14,11 @@ interface VoteCounts {
 
 interface ResultsPageProps {
   onSwitchToVoting: () => void
+  user: any
+  onLogout: () => void
 }
 
-function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
+function ResultsPage({ onSwitchToVoting, user, onLogout }: ResultsPageProps) {
   const [counts, setCounts] = useState<VoteCounts>({
     King: 0,
     Queen: 0,
@@ -78,7 +80,11 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
             <div className={`w-3 h-3 rounded-full ${isUpdating ? 'bg-green-400 animate-pulse' : 'bg-green-500'}`}></div>
             <span className="text-sm" style={{ color: '#FFD700' }}>Live • Last updated: {lastUpdate.toLocaleTimeString()}</span>
           </div>
-          <div className="space-x-4">
+          <div className="flex gap-4 justify-center items-center flex-wrap">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ backgroundColor: 'rgba(100, 65, 165, 0.3)', border: '1px solid #6441A5' }}>
+              {user?.picture && <img src={user.picture} alt="Profile" className="w-8 h-8 rounded-full" />}
+              <span style={{ color: '#FFD700' }}>👋 {user?.name}</span>
+            </div>
             <button
               onClick={onSwitchToVoting}
               className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
@@ -89,6 +95,16 @@ function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
               }}
             >
               🏰 Back to Voting
+            </button>
+            <button
+              onClick={onLogout}
+              className="px-4 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
+              style={{
+                background: 'linear-gradient(45deg, #666, #333)',
+                border: '2px solid #FFD700'
+              }}
+            >
+              🚪 Logout
             </button>
             <button
               onClick={() => {
