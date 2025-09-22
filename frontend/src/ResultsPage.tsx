@@ -15,10 +15,9 @@ interface VoteCounts {
 interface ResultsPageProps {
   onSwitchToVoting: () => void
   user: any
-  onLogout: () => void
 }
 
-function ResultsPage({ onSwitchToVoting, user, onLogout }: ResultsPageProps) {
+function ResultsPage({ onSwitchToVoting, user }: ResultsPageProps) {
   const [counts, setCounts] = useState<VoteCounts>({
     King: 0,
     Queen: 0,
@@ -96,16 +95,8 @@ function ResultsPage({ onSwitchToVoting, user, onLogout }: ResultsPageProps) {
             >
               🏰 Back to Voting
             </button>
-            <button
-              onClick={onLogout}
-              className="px-4 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
-              style={{
-                background: 'linear-gradient(45deg, #666, #333)',
-                border: '2px solid #FFD700'
-              }}
-            >
-              🚪 Logout
-            </button>
+
+
             <button
               onClick={() => {
                 const adminEmail = prompt('Enter admin email:')

@@ -34,10 +34,7 @@ function App() {
 
 
 
-  const handleLogout = () => {
-    // Just refresh the page to reset
-    window.location.reload()
-  }
+
 
   return (
     <div>
@@ -46,13 +43,11 @@ function App() {
           onSwitchToResults={() => setCurrentPage('results')} 
           user={user}
           authToken={authToken}
-          onLogout={handleLogout}
         />
       ) : (
         <ResultsPage 
           onSwitchToVoting={() => setCurrentPage('voting')} 
           user={user}
-          onLogout={handleLogout}
         />
       )}
       <SpeedInsights />

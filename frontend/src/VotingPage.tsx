@@ -5,10 +5,9 @@ interface VotingPageProps {
   onSwitchToResults: () => void
   user: any
   authToken: string
-  onLogout: () => void
 }
 
-function VotingPage({ onSwitchToResults, user, authToken, onLogout }: VotingPageProps) {
+function VotingPage({ onSwitchToResults, user, authToken }: VotingPageProps) {
   const [votingNames, setVotingNames] = useState<{[key: string]: string}>({})
   const [securityData, setSecurityData] = useState<any>(null)
   const security = SecurityManager.getInstance()
@@ -94,16 +93,7 @@ function VotingPage({ onSwitchToResults, user, authToken, onLogout }: VotingPage
             >
               <span style={{ color: '#ffffff' }}>🎭 View Results</span>
             </button>
-            <button
-              onClick={onLogout}
-              className="px-4 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
-              style={{
-                background: 'linear-gradient(45deg, #666, #333)',
-                border: '2px solid #FFD700'
-              }}
-            >
-              🚪 Logout
-            </button>
+
           </div>
         </div>
 
