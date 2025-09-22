@@ -2,4 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* add any custom styles */
+.placeholder-white::placeholder {
+  color: white !important;
+  opacity: 0.8;
+}
+
+input::placeholder {
+  color: white !important;
+  opacity: 0.8;
+}

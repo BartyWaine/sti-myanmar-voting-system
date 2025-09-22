@@ -132,6 +132,7 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
                     color: '#ffffff',
                     caretColor: '#FFD700'
                   }}
+                  className="placeholder-white"
                   onFocus={(e) => {
                     e.target.style.borderColor = '#FFD700'
                     e.target.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.6)'
