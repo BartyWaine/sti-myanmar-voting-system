@@ -48,23 +48,48 @@ def vote(vote_data: dict, request: Request):
     device_token = vote_data.get("device_token")
     category = vote_data.get("category")
     candidate_name = vote_data.get("candidate_name")
+    security_data = vote_data.get("security", {})
     
     # Get client IP address
     client_ip = request.client.host
     if "x-forwarded-for" in request.headers:
         client_ip = request.headers["x-forwarded-for"].split(",")[0].strip()
     
+    # Enhanced security validation
+    fingerprint = security_data.get("fingerprint")
+    session_key = security_data.get("sessionKey")
+    timestamp = security_data.get("timestamp", 0)
+    
+    # Validate timestamp (within 5 minutes)
+    import time
+    current_time = int(time.time() * 1000)
+    if abs(current_time - timestamp) > 300000:  # 5 minutes
+        return {"success": False, "message": "Request expired"}
+    
+    # Validate security data
+    if not fingerprint or not session_key or len(session_key) != 64:
+        return {"success": False, "message": "Invalid security data"}
+    
+    # Create enhanced device token with security data
+    enhanced_token = f"{device_token}:{fingerprint}:{client_ip}"
+    
     # Track user activity
-    update_user_activity(device_token)
+    update_user_activity(enhanced_token)
     
     # Check multiple vote prevention methods
-    if has_voted_for_category(device_token, category):
+    if has_voted_for_category(enhanced_token, category):
         return {"success": False, "message": "Already voted for this category"}
     
     if has_ip_voted_for_category(client_ip, category):
         return {"success": False, "message": "This IP address has already voted for this category"}
     
-    if cast_vote(device_token, category, candidate_name, client_ip):
+    # Check fingerprint-based voting
+    if has_voted_for_category(fingerprint, category):
+        return {"success": False, "message": "This device has already voted for this category"}
+    
+    if cast_vote(enhanced_token, category, candidate_name, client_ip):
+        # Also record fingerprint vote
+        cast_vote(fingerprint, category, candidate_name, client_ip)
         return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name}
     else:
         return {"success": False, "message": "Invalid category"}

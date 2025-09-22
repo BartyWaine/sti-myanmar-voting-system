@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { SecurityManager } from './security'
 
 interface VotingPageProps {
   onSwitchToResults: () => void
@@ -6,14 +7,13 @@ interface VotingPageProps {
 
 function VotingPage({ onSwitchToResults }: VotingPageProps) {
   const [votingNames, setVotingNames] = useState<{[key: string]: string}>({})
-  const [deviceToken] = useState(() => {
-    let token = localStorage.getItem('voting_device_token')
-    if (!token) {
-      token = `device-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      localStorage.setItem('voting_device_token', token)
-    }
-    return token
-  })
+  const [securityData, setSecurityData] = useState<any>(null)
+  const security = SecurityManager.getInstance()
+
+  useEffect(() => {
+    const data = security.initialize()
+    setSecurityData(data)
+  }, [])
 
   const categories = [
     'King', 'Queen', 'Prince', 'Princess', 
@@ -38,9 +38,10 @@ function VotingPage({ onSwitchToResults }: VotingPageProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          device_token: deviceToken,
+          device_token: securityData?.deviceId,
           category: category,
-          candidate_name: name
+          candidate_name: name,
+          security: security.getSecurityData()
         })
       })
       
