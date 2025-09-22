@@ -29,7 +29,7 @@ function VotingPage({ onSwitchToResults, user, authToken }: VotingPageProps) {
   const handleVote = async (category: string) => {
     const name = votingNames[category]?.trim()
     if (!name) {
-      alert('Please enter a name first!')
+      alert('Please enter a candidate number first!')
       return
     }
 
@@ -134,7 +134,7 @@ function VotingPage({ onSwitchToResults, user, authToken }: VotingPageProps) {
               <div className="space-y-4">
                 <input
                   type="text"
-                  placeholder="✨ Enter candidate name"
+                  placeholder="✨ Enter candidate number"
                   value={votingNames[category] || ''}
                   onChange={(e) => handleVotingNameChange(category, e.target.value)}
                   className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 placeholder-white"
