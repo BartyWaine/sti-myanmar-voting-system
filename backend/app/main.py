@@ -83,18 +83,10 @@ def vote(vote_data: dict, request: Request):
     if abs(current_time - timestamp) > 300000:  # 5 minutes
         return {"success": False, "message": "Request expired"}
     
-    # Validate user authentication (accept demo tokens)
+    # No authentication required - allow all votes
     auth_token = vote_data.get("auth_token", "")
-    if AUTH_ENABLED and not auth_token.startswith("demo_token_"):
-        user = verify_session(auth_token)
-        if not user:
-            return {"success": False, "message": "Authentication required - please login"}
-        user_id = user["id"]
-        user_email = user["email"]
-    else:
-        # Accept demo tokens or when auth is not available
-        user_id = "demo_user_" + str(int(time.time()))
-        user_email = "demo@sti.edu"
+    user_id = "demo_user_" + str(int(time.time()))
+    user_email = "demo@sti.edu"
     
     # Validate security data
     if not fingerprint or not session_key or len(session_key) != 64:
