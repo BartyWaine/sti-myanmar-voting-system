@@ -7,6 +7,7 @@ from app.database import (
     reset_all_votes_db,
     update_user_activity_db,
     get_concurrent_users_db,
+    has_ip_voted_for_category_db,
     init_database
 )
 
@@ -59,7 +60,7 @@ def get_counts():
 def cast_vote(device_token: str, category: str, candidate_name: str = None, client_ip: str = None):
     # Use database if available
     if os.getenv('DATABASE_URL'):
-        return cast_vote_db(device_token, category, candidate_name)
+        return cast_vote_db(device_token, category, candidate_name, client_ip)
     
     # Fallback to in-memory
     if category not in vote_counts:
@@ -113,6 +114,11 @@ def reset_all_votes():
     ip_votes = {}
 
 def has_ip_voted_for_category(client_ip: str, category: str):
+    # Use database if available
+    if os.getenv('DATABASE_URL'):
+        return has_ip_voted_for_category_db(client_ip, category)
+    
+    # Fallback to in-memory
     return client_ip in ip_votes and category in ip_votes[client_ip]
 
 def update_user_activity(device_token: str):

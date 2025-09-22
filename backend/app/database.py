@@ -26,8 +26,19 @@ def init_database():
                     device_token VARCHAR(255) NOT NULL,
                     category VARCHAR(100) NOT NULL,
                     candidate_name VARCHAR(255),
+                    client_ip VARCHAR(45),
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     UNIQUE(device_token, category)
+                )
+            ''')
+            
+            cur.execute('''
+                CREATE TABLE IF NOT EXISTS ip_votes (
+                    id SERIAL PRIMARY KEY,
+                    client_ip VARCHAR(45) NOT NULL,
+                    category VARCHAR(100) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(client_ip, category)
                 )
             ''')
             
@@ -68,17 +79,26 @@ def get_vote_counts():
     finally:
         conn.close()
 
-def cast_vote_db(device_token, category, candidate_name):
+def cast_vote_db(device_token, category, candidate_name, client_ip=None):
     conn = get_db_connection()
     if not conn:
         return False
     
     try:
         with conn.cursor() as cur:
+            # Insert device vote
             cur.execute(
-                'INSERT INTO votes (device_token, category, candidate_name) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING',
-                (device_token, category, candidate_name)
+                'INSERT INTO votes (device_token, category, candidate_name, client_ip) VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING',
+                (device_token, category, candidate_name, client_ip)
             )
+            
+            # Insert IP vote if provided
+            if client_ip:
+                cur.execute(
+                    'INSERT INTO ip_votes (client_ip, category) VALUES (%s, %s) ON CONFLICT DO NOTHING',
+                    (client_ip, category)
+                )
+            
             conn.commit()
             return cur.rowcount > 0
     except Exception as e:
@@ -157,6 +177,7 @@ def reset_all_votes_db():
     try:
         with conn.cursor() as cur:
             cur.execute('DELETE FROM votes')
+            cur.execute('DELETE FROM ip_votes')
             cur.execute('DELETE FROM active_users')
             conn.commit()
     except Exception as e:
@@ -199,5 +220,20 @@ def get_concurrent_users_db():
     except Exception as e:
         print(f"Concurrent users error: {e}")
         return 0
+    finally:
+        conn.close()
+
+def has_ip_voted_for_category_db(client_ip, category):
+    conn = get_db_connection()
+    if not conn:
+        return False
+    
+    try:
+        with conn.cursor() as cur:
+            cur.execute('SELECT 1 FROM ip_votes WHERE client_ip = %s AND category = %s', (client_ip, category))
+            return cur.fetchone() is not None
+    except Exception as e:
+        print(f"Check IP vote error: {e}")
+        return False
     finally:
         conn.close()
