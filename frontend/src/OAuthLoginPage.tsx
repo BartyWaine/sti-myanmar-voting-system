@@ -181,33 +181,33 @@ function OAuthLoginPage({ onLogin }: OAuthLoginPageProps) {
               </svg>
               <span className="text-sm text-center">{isLoading ? '🔄 Connecting...' : 'GitHub'}</span>
             </button>
-
-            <div className="mt-8 text-center">
-              <div className="flex items-center justify-center mb-4">
-                <div className="h-px bg-gradient-to-r from-transparent via-white to-transparent flex-1"></div>
-                <span className="px-4 text-sm" style={{ color: '#ffd700' }}>Secure Authentication</span>
-                <div className="h-px bg-gradient-to-r from-transparent via-white to-transparent flex-1"></div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4 text-center text-sm" style={{ color: '#ffffff' }}>
-                <div>
-                  <div className="text-2xl mb-1">🔒</div>
-                  <p>Secure</p>
-                </div>
-                <div>
-                  <div className="text-2xl mb-1">⚡</div>
-                  <p>Fast</p>
-                </div>
-                <div>
-                  <div className="text-2xl mb-1">🛡️</div>
-                  <p>Private</p>
-                </div>
-              </div>
-              
-              <p className="mt-4 text-xs" style={{ color: '#ffd700' }}>
-                One vote per account • Your data is protected
-              </p>
+          </div>
+          
+          <div className="mt-8 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-px bg-gradient-to-r from-transparent via-white to-transparent flex-1"></div>
+              <span className="px-4 text-sm" style={{ color: '#ffd700' }}>Secure Authentication</span>
+              <div className="h-px bg-gradient-to-r from-transparent via-white to-transparent flex-1"></div>
             </div>
+            
+            <div className="grid grid-cols-3 gap-4 text-center text-sm" style={{ color: '#ffffff' }}>
+              <div>
+                <div className="text-2xl mb-1">🔒</div>
+                <p>Secure</p>
+              </div>
+              <div>
+                <div className="text-2xl mb-1">⚡</div>
+                <p>Fast</p>
+              </div>
+              <div>
+                <div className="text-2xl mb-1">🛡️</div>
+                <p>Private</p>
+              </div>
+            </div>
+            
+            <p className="mt-4 text-xs" style={{ color: '#ffd700' }}>
+              One vote per account • Your data is protected
+            </p>
           </div>
         </div>
 
