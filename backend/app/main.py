@@ -83,17 +83,28 @@ def vote(vote_data: dict, request: Request):
     fingerprint = security_data.get("fingerprint", "demo_fingerprint")
     session_key = security_data.get("sessionKey", "demo_session_key_12345678901234567890123456789012345678901234567890123456789012")
     
-    # Simple device token
+    # Enhanced device fingerprinting to prevent VPN bypass
     enhanced_token = f"{device_token}:{client_ip}"
+    fingerprint_token = f"fp:{fingerprint}"
+    device_only_token = f"device:{device_token}"
     
     # Track user activity
     update_user_activity(enhanced_token)
     
-    # Only check device token to prevent spam
+    # Multiple checks to prevent VPN bypass
     if has_voted_for_category(enhanced_token, category):
         return {"success": False, "message": "Already voted for this category"}
     
+    if has_voted_for_category(fingerprint_token, category):
+        return {"success": False, "message": "This device has already voted for this category"}
+    
+    if has_voted_for_category(device_only_token, category):
+        return {"success": False, "message": "This device has already voted for this category"}
+    
     if cast_vote(enhanced_token, category, candidate_name, client_ip):
+        # Also record with fingerprint and device tokens to prevent VPN bypass
+        cast_vote(fingerprint_token, category, candidate_name, client_ip)
+        cast_vote(device_only_token, category, candidate_name, client_ip)
         return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name, "user": user_email}
     else:
         return {"success": False, "message": "Invalid category"}
