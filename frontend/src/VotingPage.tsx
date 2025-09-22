@@ -4,10 +4,11 @@ import { SecurityManager } from './security'
 interface VotingPageProps {
   onSwitchToResults: () => void
   user: any
+  authToken: string
   onLogout: () => void
 }
 
-function VotingPage({ onSwitchToResults, user, onLogout }: VotingPageProps) {
+function VotingPage({ onSwitchToResults, user, authToken, onLogout }: VotingPageProps) {
   const [votingNames, setVotingNames] = useState<{[key: string]: string}>({})
   const [securityData, setSecurityData] = useState<any>(null)
   const security = SecurityManager.getInstance()
@@ -44,11 +45,7 @@ function VotingPage({ onSwitchToResults, user, onLogout }: VotingPageProps) {
           category: category,
           candidate_name: name,
           security: security.getSecurityData(),
-          user: {
-            id: user?.id,
-            email: user?.email,
-            provider: user?.provider
-          }
+          auth_token: authToken
         })
       })
       

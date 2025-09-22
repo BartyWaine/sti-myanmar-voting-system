@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results, reset_all_votes, update_user_activity, get_concurrent_users, has_ip_voted_for_category
+from app.auth import create_user, authenticate_user, verify_session, logout_user
 import uuid
 
 app = FastAPI()
@@ -68,12 +69,14 @@ def vote(vote_data: dict, request: Request):
         return {"success": False, "message": "Request expired"}
     
     # Validate user authentication
-    user_id = user_data.get("id")
-    user_email = user_data.get("email")
-    user_provider = user_data.get("provider")
+    auth_token = vote_data.get("auth_token", "")
+    user = verify_session(auth_token)
     
-    if not user_id or not user_email or not user_provider:
-        return {"success": False, "message": "Authentication required"}
+    if not user:
+        return {"success": False, "message": "Authentication required - please login"}
+    
+    user_id = user["id"]
+    user_email = user["email"]
     
     # Validate security data
     if not fingerprint or not session_key or len(session_key) != 64:
@@ -81,7 +84,7 @@ def vote(vote_data: dict, request: Request):
     
     # Create enhanced device token with security and user data
     enhanced_token = f"{device_token}:{fingerprint}:{client_ip}"
-    social_user_token = f"{user_provider}:{user_id}"
+    auth_user_token = f"auth:{user_id}"
     
     # Track user activity
     update_user_activity(enhanced_token)
@@ -93,27 +96,66 @@ def vote(vote_data: dict, request: Request):
     if has_ip_voted_for_category(client_ip, category):
         return {"success": False, "message": "This IP address has already voted for this category"}
     
-    # Check social account voting (primary prevention)
-    if has_voted_for_category(social_user_token, category):
-        return {"success": False, "message": "This social account has already voted for this category"}
+    # Check authenticated user voting (primary prevention)
+    if has_voted_for_category(auth_user_token, category):
+        return {"success": False, "message": "This account has already voted for this category"}
     
     # Check fingerprint-based voting
     if has_voted_for_category(fingerprint, category):
         return {"success": False, "message": "This device has already voted for this category"}
     
     if cast_vote(enhanced_token, category, candidate_name, client_ip):
-        # Also record social account and fingerprint votes
-        cast_vote(social_user_token, category, candidate_name, client_ip)
+        # Also record authenticated user and fingerprint votes
+        cast_vote(auth_user_token, category, candidate_name, client_ip)
         cast_vote(fingerprint, category, candidate_name, client_ip)
         return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name, "user": user_email}
     else:
         return {"success": False, "message": "Invalid category"}
 
+@app.post("/api/v1/register")
+def register(user_data: dict):
+    email = user_data.get("email", "").strip().lower()
+    password = user_data.get("password", "")
+    name = user_data.get("name", "").strip()
+    
+    if not email or not password or not name:
+        return {"success": False, "message": "All fields are required"}
+    
+    if len(password) < 6:
+        return {"success": False, "message": "Password must be at least 6 characters"}
+    
+    return create_user(email, password, name)
+
+@app.post("/api/v1/login")
+def login(login_data: dict):
+    email = login_data.get("email", "").strip().lower()
+    password = login_data.get("password", "")
+    
+    if not email or not password:
+        return {"success": False, "message": "Email and password are required"}
+    
+    return authenticate_user(email, password)
+
+@app.post("/api/v1/logout")
+def logout(logout_data: dict):
+    token = logout_data.get("token", "")
+    logout_user(token)
+    return {"success": True, "message": "Logged out successfully"}
+
+@app.post("/api/v1/verify")
+def verify_token(token_data: dict):
+    token = token_data.get("token", "")
+    user = verify_session(token)
+    
+    if user:
+        return {"success": True, "user": user}
+    else:
+        return {"success": False, "message": "Invalid or expired session"}
+
 @app.post("/api/v1/reset")
 def reset_votes():
     try:
         reset_all_votes()
-        # Return current counts to verify reset worked
         current_counts = get_counts()
         return {
             "success": True, 
