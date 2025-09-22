@@ -34,17 +34,43 @@ function VotingPage({ onSwitchToResults, user, authToken }: VotingPageProps) {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://sti-myanmar-voting-system.onrender.com'}/api/v1/vote`, {
+      // Generate enhanced security data
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      ctx.textBaseline = 'top'
+      ctx.font = '14px Arial'
+      ctx.fillText('Browser fingerprint', 2, 2)
+      const fingerprint = canvas.toDataURL()
+      
+      const enhancedSecurity = {
+        fingerprint: btoa(fingerprint).slice(0, 32),
+        sessionKey: localStorage.getItem('session_key') || (() => {
+          const key = btoa(Math.random().toString() + Date.now()).slice(0, 64)
+          localStorage.setItem('session_key', key)
+          return key
+        })(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        screen: `${screen.width}x${screen.height}`,
+        language: navigator.language,
+        userAgent: navigator.userAgent,
+        cookieEnabled: navigator.cookieEnabled,
+        timestamp: Date.now()
+      }
+      
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://sti-voting-api.onrender.com'}/api/v1/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          device_token: securityData?.deviceId,
+          device_token: securityData?.deviceId || localStorage.getItem('voting_device_token'),
           category: category,
           candidate_name: name,
-          security: security.getSecurityData(),
-          auth_token: authToken
+          security: enhancedSecurity,
+          user: {
+            email: user?.email || 'demo@sti.edu',
+            name: user?.name || 'Demo User'
+          }
         })
       })
       

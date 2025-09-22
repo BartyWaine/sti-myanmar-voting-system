@@ -83,15 +83,22 @@ def vote(vote_data: dict, request: Request):
     fingerprint = security_data.get("fingerprint", "demo_fingerprint")
     session_key = security_data.get("sessionKey", "demo_session_key_12345678901234567890123456789012345678901234567890123456789012")
     
+    # Get browser fingerprint data
+    user_agent = request.headers.get("user-agent", "")
+    accept_language = request.headers.get("accept-language", "")
+    browser_fingerprint = f"{user_agent}_{accept_language}_{client_ip}"
+    
     # Enhanced device fingerprinting to prevent VPN bypass
     enhanced_token = f"{device_token}:{client_ip}"
     fingerprint_token = f"fp:{fingerprint}"
     device_only_token = f"device:{device_token}"
+    browser_token = f"browser:{hash(browser_fingerprint)}"
+    session_token = f"session:{session_key[:32]}"
     
     # Track user activity
     update_user_activity(enhanced_token)
     
-    # Multiple checks to prevent VPN bypass
+    # Multiple checks to prevent VPN bypass and browser switching
     if has_voted_for_category(enhanced_token, category):
         return {"success": False, "message": "Already voted for this category"}
     
@@ -101,10 +108,21 @@ def vote(vote_data: dict, request: Request):
     if has_voted_for_category(device_only_token, category):
         return {"success": False, "message": "This device has already voted for this category"}
     
+    if has_voted_for_category(browser_token, category):
+        return {"success": False, "message": "This browser has already voted for this category"}
+    
+    if has_voted_for_category(session_token, category):
+        return {"success": False, "message": "This session has already voted for this category"}
+    
+    if has_ip_voted_for_category(client_ip, category):
+        return {"success": False, "message": "This network/IP has already voted for this category"}
+    
     if cast_vote(enhanced_token, category, candidate_name, client_ip):
-        # Also record with fingerprint and device tokens to prevent VPN bypass
+        # Record with all tokens to prevent any bypass method
         cast_vote(fingerprint_token, category, candidate_name, client_ip)
         cast_vote(device_only_token, category, candidate_name, client_ip)
+        cast_vote(browser_token, category, candidate_name, client_ip)
+        cast_vote(session_token, category, candidate_name, client_ip)
         return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name, "user": user_email}
     else:
         return {"success": False, "message": "Invalid category"}
