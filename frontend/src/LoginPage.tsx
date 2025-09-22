@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 interface LoginPageProps {
   onLogin: (user: any) => void
@@ -15,109 +15,45 @@ declare global {
 function LoginPage({ onLogin }: LoginPageProps) {
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    // Load Google Sign-In script
-    const script = document.createElement('script')
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    document.body.appendChild(script)
-
-    script.onload = () => {
-      if (window.google) {
-        window.google.accounts.id.initialize({
-          client_id: '1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com', // Replace with your Google Client ID
-          callback: handleGoogleLogin
-        })
-
-        window.google.accounts.id.renderButton(
-          document.getElementById('google-signin-button'),
-          {
-            theme: 'outline',
-            size: 'large',
-            width: 300,
-            text: 'signin_with'
-          }
-        )
-      }
-    }
-
-    return () => {
-      document.body.removeChild(script)
-    }
-  }, [])
-
-  const handleGoogleLogin = (response: any) => {
-    setIsLoading(true)
-    try {
-      // Decode JWT token
-      const payload = JSON.parse(atob(response.credential.split('.')[1]))
-      
-      const user = {
-        id: payload.sub,
-        email: payload.email,
-        name: payload.name,
-        picture: payload.picture,
-        provider: 'google'
-      }
-
-      // Store user data
-      localStorage.setItem('voting_user', JSON.stringify(user))
-      onLogin(user)
-    } catch (error) {
-      console.error('Login error:', error)
-      alert('Login failed. Please try again.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleFacebookLogin = () => {
+  // Demo login - works without OAuth setup
+  const handleDemoGoogleLogin = () => {
     setIsLoading(true)
     
-    // Load Facebook SDK
-    if (!(window as any).FB) {
-      const script = document.createElement('script')
-      script.src = 'https://connect.facebook.net/en_US/sdk.js'
-      script.async = true
-      document.body.appendChild(script)
-      
-      script.onload = () => {
-        (window as any).FB.init({
-          appId: '1234567890123456', // Replace with your Facebook App ID
-          cookie: true,
-          xfbml: true,
-          version: 'v18.0'
-        })
-        
-        performFacebookLogin()
+    // Simulate Google login
+    setTimeout(() => {
+      const user = {
+        id: 'demo_google_' + Date.now(),
+        email: 'demo@gmail.com',
+        name: 'Demo Google User',
+        picture: 'https://via.placeholder.com/40',
+        provider: 'google'
       }
-    } else {
-      performFacebookLogin()
-    }
+      
+      localStorage.setItem('voting_user', JSON.stringify(user))
+      onLogin(user)
+      setIsLoading(false)
+    }, 1000)
   }
 
-  const performFacebookLogin = () => {
-    (window as any).FB.login((response: any) => {
-      if (response.authResponse) {
-        (window as any).FB.api('/me', { fields: 'name,email,picture' }, (userInfo: any) => {
-          const user = {
-            id: userInfo.id,
-            email: userInfo.email,
-            name: userInfo.name,
-            picture: userInfo.picture?.data?.url,
-            provider: 'facebook'
-          }
 
-          localStorage.setItem('voting_user', JSON.stringify(user))
-          onLogin(user)
-          setIsLoading(false)
-        })
-      } else {
-        alert('Facebook login failed')
-        setIsLoading(false)
+
+  const handleDemoFacebookLogin = () => {
+    setIsLoading(true)
+    
+    // Simulate Facebook login
+    setTimeout(() => {
+      const user = {
+        id: 'demo_facebook_' + Date.now(),
+        email: 'demo@facebook.com',
+        name: 'Demo Facebook User',
+        picture: 'https://via.placeholder.com/40',
+        provider: 'facebook'
       }
-    }, { scope: 'email' })
+      
+      localStorage.setItem('voting_user', JSON.stringify(user))
+      onLogin(user)
+      setIsLoading(false)
+    }, 1000)
   }
 
   return (
@@ -149,18 +85,26 @@ function LoginPage({ onLogin }: LoginPageProps) {
           }}
         >
           <div className="space-y-4">
-            {/* Google Sign-In Button */}
-            <div className="flex justify-center">
-              <div id="google-signin-button"></div>
-            </div>
+            {/* Demo Google Login Button */}
+            <button
+              onClick={handleDemoGoogleLogin}
+              disabled={isLoading}
+              className="w-full px-6 py-3 rounded-lg font-bold text-white transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(45deg, #4285F4, #34A853)',
+                border: '2px solid #4285F4'
+              }}
+            >
+              {isLoading ? '🔄 Logging in...' : '🔍 Continue with Google (Demo)'}
+            </button>
 
             <div className="text-center text-sm" style={{ color: '#FFD700' }}>
               or
             </div>
 
-            {/* Facebook Login Button */}
+            {/* Demo Facebook Login Button */}
             <button
-              onClick={handleFacebookLogin}
+              onClick={handleDemoFacebookLogin}
               disabled={isLoading}
               className="w-full px-6 py-3 rounded-lg font-bold text-white transition-all duration-200 transform hover:scale-105 disabled:opacity-50"
               style={{
@@ -168,12 +112,13 @@ function LoginPage({ onLogin }: LoginPageProps) {
                 border: '2px solid #1877F2'
               }}
             >
-              {isLoading ? '🔄 Logging in...' : '📘 Continue with Facebook'}
+              {isLoading ? '🔄 Logging in...' : '📘 Continue with Facebook (Demo)'}
             </button>
 
             <div className="mt-6 text-center text-sm" style={{ color: '#ffffff' }}>
-              <p>🔒 Your data is secure and only used for voting verification</p>
-              <p className="mt-2">One vote per account • No spam • Privacy protected</p>
+              <p>🔒 Demo Mode - No real authentication required</p>
+              <p className="mt-2">One vote per session • Secure voting system</p>
+              <p className="mt-2 text-xs" style={{ color: '#FFD700' }}>Note: This is a demo. Real OAuth can be configured later.</p>
             </div>
           </div>
         </div>
