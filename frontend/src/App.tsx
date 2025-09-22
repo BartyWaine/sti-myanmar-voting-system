@@ -1,61 +1,47 @@
 import { useState, useEffect } from 'react'
 import VotingPage from './VotingPage'
 import ResultsPage from './ResultsPage'
-import SimpleLoginPage from './SimpleLoginPage'
+
 import { SpeedInsights } from '@vercel/speed-insights/react'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'login' | 'voting' | 'results'>('login')
-  const [user, setUser] = useState<any>(null)
-  const [authToken, setAuthToken] = useState<string>('')
+  const [currentPage, setCurrentPage] = useState<'voting' | 'results'>('voting')
+  const [user, setUser] = useState<any>({
+    id: 'demo_user_' + Date.now(),
+    email: 'demo@sti.edu',
+    name: 'STI Student',
+    picture: 'https://via.placeholder.com/40',
+    provider: 'demo'
+  })
+  const [authToken, setAuthToken] = useState<string>('demo_token_' + Date.now())
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('voting_user')
-    const savedToken = localStorage.getItem('voting_token')
-    
-    if (savedUser && savedToken) {
-      try {
-        const userData = JSON.parse(savedUser)
-        setUser(userData)
-        setAuthToken(savedToken)
-        setCurrentPage('voting')
-      } catch (error) {
-        localStorage.removeItem('voting_user')
-        localStorage.removeItem('voting_token')
-      }
+    // Auto-login demo user
+    const demoUser = {
+      id: 'demo_user_' + Date.now(),
+      email: 'demo@sti.edu',
+      name: 'STI Student',
+      picture: 'https://via.placeholder.com/40',
+      provider: 'demo'
     }
+    const demoToken = 'demo_token_' + Date.now()
+    
+    localStorage.setItem('voting_user', JSON.stringify(demoUser))
+    localStorage.setItem('voting_token', demoToken)
+    setUser(demoUser)
+    setAuthToken(demoToken)
   }, [])
 
-  const handleLogin = (userData: any, token: string) => {
-    setUser(userData)
-    setAuthToken(token)
-    setCurrentPage('voting')
-  }
 
-  const handleLogout = async () => {
-    // Call logout API
-    try {
-      await fetch(`${import.meta.env.VITE_API_URL || 'https://sti-myanmar-voting-system.onrender.com'}/api/v1/logout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: authToken })
-      })
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
-    
-    localStorage.removeItem('voting_user')
-    localStorage.removeItem('voting_token')
-    setUser(null)
-    setAuthToken('')
-    setCurrentPage('login')
+
+  const handleLogout = () => {
+    // Just refresh the page to reset
+    window.location.reload()
   }
 
   return (
     <div>
-      {currentPage === 'login' ? (
-        <SimpleLoginPage onLogin={handleLogin} />
-      ) : currentPage === 'voting' ? (
+      {currentPage === 'voting' ? (
         <VotingPage 
           onSwitchToResults={() => setCurrentPage('results')} 
           user={user}
