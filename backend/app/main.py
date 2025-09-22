@@ -1,6 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results, reset_all_votes, update_user_activity, get_concurrent_users
+from app.storage import get_counts, cast_vote, has_voted, has_voted_for_category, get_results, reset_all_votes, update_user_activity, get_concurrent_users, has_ip_voted_for_category
 import uuid
 
 app = FastAPI()
@@ -44,18 +44,27 @@ def get_live_results():
     return get_results()
 
 @app.post("/api/v1/vote")
-def vote(vote_data: dict):
+def vote(vote_data: dict, request: Request):
     device_token = vote_data.get("device_token")
     category = vote_data.get("category")
     candidate_name = vote_data.get("candidate_name")
     
+    # Get client IP address
+    client_ip = request.client.host
+    if "x-forwarded-for" in request.headers:
+        client_ip = request.headers["x-forwarded-for"].split(",")[0].strip()
+    
     # Track user activity
     update_user_activity(device_token)
     
+    # Check multiple vote prevention methods
     if has_voted_for_category(device_token, category):
         return {"success": False, "message": "Already voted for this category"}
     
-    if cast_vote(device_token, category, candidate_name):
+    if has_ip_voted_for_category(client_ip, category):
+        return {"success": False, "message": "This IP address has already voted for this category"}
+    
+    if cast_vote(device_token, category, candidate_name, client_ip):
         return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name}
     else:
         return {"success": False, "message": "Invalid category"}

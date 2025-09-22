@@ -21,6 +21,7 @@ candidate_votes = {
 }
 
 votes = {}  # device_token -> set of categories
+ip_votes = {}  # ip_address -> set of categories
 active_users = set()  # Track active users
 last_seen = {}  # device_token -> timestamp
 
@@ -37,7 +38,7 @@ def get_counts():
         "total": total
     }
 
-def cast_vote(device_token: str, category: str, candidate_name: str = None):
+def cast_vote(device_token: str, category: str, candidate_name: str = None, client_ip: str = None):
     if category not in vote_counts:
         return False
     
@@ -49,6 +50,12 @@ def cast_vote(device_token: str, category: str, candidate_name: str = None):
     
     votes[device_token].add(category)
     vote_counts[category] += 1
+    
+    # Track IP votes to prevent VPN abuse
+    if client_ip:
+        if client_ip not in ip_votes:
+            ip_votes[client_ip] = set()
+        ip_votes[client_ip].add(category)
     
     # Track individual candidate votes
     if candidate_name:
@@ -65,7 +72,7 @@ def has_voted_for_category(device_token: str, category: str):
     return device_token in votes and category in votes[device_token]
 
 def reset_all_votes():
-    global vote_counts, candidate_votes, votes
+    global vote_counts, candidate_votes, votes, ip_votes
     # Reset vote counts
     for category in vote_counts:
         vote_counts[category] = 0
@@ -74,6 +81,11 @@ def reset_all_votes():
         candidate_votes[category] = {}
     # Clear device votes
     votes = {}
+    # Clear IP votes
+    ip_votes = {}
+
+def has_ip_voted_for_category(client_ip: str, category: str):
+    return client_ip in ip_votes and category in ip_votes[client_ip]
 
 def update_user_activity(device_token: str):
     import time
