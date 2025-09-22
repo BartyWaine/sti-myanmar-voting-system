@@ -14,10 +14,9 @@ interface VoteCounts {
 
 interface ResultsPageProps {
   onSwitchToVoting: () => void
-  user: any
 }
 
-function ResultsPage({ onSwitchToVoting, user }: ResultsPageProps) {
+function ResultsPage({ onSwitchToVoting }: ResultsPageProps) {
   const [counts, setCounts] = useState<VoteCounts>({
     King: 0,
     Queen: 0,
@@ -38,7 +37,7 @@ function ResultsPage({ onSwitchToVoting, user }: ResultsPageProps) {
     const fetchData = async () => {
       setIsUpdating(true)
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://sti-myanmar-voting-system.onrender.com'
         const [countsResponse, resultsResponse] = await Promise.all([
           axios.get(`${apiUrl}/api/v1/counts`),
           axios.get(`${apiUrl}/api/v1/results`)
@@ -80,10 +79,7 @@ function ResultsPage({ onSwitchToVoting, user }: ResultsPageProps) {
             <span className="text-sm" style={{ color: '#FFD700' }}>Live • Last updated: {lastUpdate.toLocaleTimeString()}</span>
           </div>
           <div className="flex gap-4 justify-center items-center flex-wrap">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ backgroundColor: 'rgba(100, 65, 165, 0.3)', border: '1px solid #6441A5' }}>
-              {user?.picture && <img src={user.picture} alt="Profile" className="w-8 h-8 rounded-full" />}
-              <span style={{ color: '#FFD700' }}>👋 {user?.name}</span>
-            </div>
+
             <button
               onClick={onSwitchToVoting}
               className="px-6 py-3 rounded-lg text-white font-bold transition-all duration-200 shadow-lg"
@@ -122,7 +118,7 @@ function ResultsPage({ onSwitchToVoting, user }: ResultsPageProps) {
                   onClick={async () => {
                     if (confirm('Are you sure you want to reset all votes? This cannot be undone!')) {
                       try {
-                        const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+                        const apiUrl = import.meta.env.VITE_API_URL || 'https://sti-myanmar-voting-system.onrender.com'
                         
                         const response = await fetch(`${apiUrl}/api/v1/reset`, {
                           method: 'POST',

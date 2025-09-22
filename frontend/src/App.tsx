@@ -47,7 +47,6 @@ function App() {
       ) : (
         <ResultsPage 
           onSwitchToVoting={() => setCurrentPage('voting')} 
-          user={user}
         />
       )}
       <SpeedInsights />
