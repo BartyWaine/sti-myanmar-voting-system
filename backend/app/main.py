@@ -77,11 +77,8 @@ def vote(vote_data: dict, request: Request):
     session_key = security_data.get("sessionKey")
     timestamp = security_data.get("timestamp", 0)
     
-    # Validate timestamp (within 5 minutes)
+    # Allow all timestamps - no expiration check
     import time
-    current_time = int(time.time() * 1000)
-    if abs(current_time - timestamp) > 300000:  # 5 minutes
-        return {"success": False, "message": "Request expired"}
     
     # No authentication required - allow all votes
     auth_token = vote_data.get("auth_token", "")
