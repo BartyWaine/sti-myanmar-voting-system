@@ -1,4 +1,4 @@
-# STI Myanmar Fresher Welcome - Voting Dashboard
+# STI Myanmar Fresher Welcome - Voting Dashboard 🎓
 
 ## 🚀 Quick Deploy to Free Hosting
 
