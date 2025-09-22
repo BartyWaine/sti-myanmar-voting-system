@@ -78,8 +78,10 @@ function VotingPage({ onSwitchToResults, user, authToken, onLogout }: VotingPage
           </h2>
           <div className="flex gap-4 justify-center items-center">
             <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ backgroundColor: 'rgba(100, 65, 165, 0.3)', border: '1px solid #6441A5' }}>
-              {user?.picture && <img src={user.picture} alt="Profile" className="w-8 h-8 rounded-full" />}
-              <span style={{ color: '#FFD700' }}>👋 {user?.name}</span>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#FFD700', color: '#2a0845' }}>
+                <span className="text-lg font-bold">👤</span>
+              </div>
+              <span style={{ color: '#FFD700' }}>👋 {user?.name || 'STI Student'}</span>
             </div>
             <button
               onClick={onSwitchToResults}
