@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import VotingPage from './VotingPage'
 import ResultsPage from './ResultsPage'
-import OAuthLoginPage from './OAuthLoginPage'
+import SimpleLoginPage from './SimpleLoginPage'
 import { SpeedInsights } from '@vercel/speed-insights/react'
 
 function App() {
@@ -54,7 +54,7 @@ function App() {
   return (
     <div>
       {currentPage === 'login' ? (
-        <OAuthLoginPage onLogin={handleLogin} />
+        <SimpleLoginPage onLogin={handleLogin} />
       ) : currentPage === 'voting' ? (
         <VotingPage 
           onSwitchToResults={() => setCurrentPage('results')} 
