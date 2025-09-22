@@ -4,7 +4,7 @@ interface OAuthLoginPageProps {
   onLogin: (user: any, token: string) => void
 }
 
-// Cache bust v2
+// Cache bust v3 - force rebuild
 function OAuthLoginPage({ onLogin }: OAuthLoginPageProps) {
   const [isLoading, setIsLoading] = useState(false)
 
