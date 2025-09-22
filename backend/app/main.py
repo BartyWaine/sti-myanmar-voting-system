@@ -72,49 +72,28 @@ def vote(vote_data: dict, request: Request):
     if "x-forwarded-for" in request.headers:
         client_ip = request.headers["x-forwarded-for"].split(",")[0].strip()
     
-    # Enhanced security validation
-    fingerprint = security_data.get("fingerprint")
-    session_key = security_data.get("sessionKey")
-    timestamp = security_data.get("timestamp", 0)
-    
-    # Allow all timestamps - no expiration check
+    # No security validation - allow all votes
     import time
     
     # No authentication required - allow all votes
-    auth_token = vote_data.get("auth_token", "")
     user_id = "demo_user_" + str(int(time.time()))
     user_email = "demo@sti.edu"
     
-    # Validate security data
-    if not fingerprint or not session_key or len(session_key) != 64:
-        return {"success": False, "message": "Invalid security data"}
+    # Use simple fallback values
+    fingerprint = security_data.get("fingerprint", "demo_fingerprint")
+    session_key = security_data.get("sessionKey", "demo_session_key_12345678901234567890123456789012345678901234567890123456789012")
     
-    # Create enhanced device token with security and user data
-    enhanced_token = f"{device_token}:{fingerprint}:{client_ip}"
-    auth_user_token = f"auth:{user_id}"
+    # Simple device token
+    enhanced_token = f"{device_token}:{client_ip}"
     
     # Track user activity
     update_user_activity(enhanced_token)
     
-    # Check multiple vote prevention methods
+    # Only check device token to prevent spam
     if has_voted_for_category(enhanced_token, category):
         return {"success": False, "message": "Already voted for this category"}
     
-    if has_ip_voted_for_category(client_ip, category):
-        return {"success": False, "message": "This IP address has already voted for this category"}
-    
-    # Check authenticated user voting (primary prevention)
-    if has_voted_for_category(auth_user_token, category):
-        return {"success": False, "message": "This account has already voted for this category"}
-    
-    # Check fingerprint-based voting
-    if has_voted_for_category(fingerprint, category):
-        return {"success": False, "message": "This device has already voted for this category"}
-    
     if cast_vote(enhanced_token, category, candidate_name, client_ip):
-        # Also record authenticated user and fingerprint votes
-        cast_vote(auth_user_token, category, candidate_name, client_ip)
-        cast_vote(fingerprint, category, candidate_name, client_ip)
         return {"success": True, "message": "Vote recorded", "category": category, "candidate": candidate_name, "user": user_email}
     else:
         return {"success": False, "message": "Invalid category"}
